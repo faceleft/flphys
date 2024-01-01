@@ -18,23 +18,23 @@ typedef struct {
 } pvec_t;
 
 typedef struct {
-    pvec_t pos;   //m
-    pvec_t mov;   //m/s
+    pvec_t pos;    //m
+    pvec_t mov;    //m/s
     double mass;   //kg
     double radius; //m
     double area;   //m^2
     double volume; //m^3
-    pvec_t force; //N
+    pvec_t force;  //N
 } pobj_t;
 
 typedef struct {
-    double density;                   //ambient air density kg/m^3
+    double density;           //ambient air density kg/m^3
     pvec_t accel_of_gravity;  //constant acceleration acting on all objects m/s^2
-    pvec_t wind;                     //ambien wind m/s
-    bool is_gravity;                    //inter-object gravity flag
-    double time;                      //total simulation time
-    pobj_t * objects;                   //pointer to objects array
-    size_t objects_num;                 //number of objects in array
+    pvec_t wind;              //ambien wind m/s
+    bool is_gravity;          //inter-object gravity flag
+    double time;              //total simulation time
+    pobj_t * objects;         //pointer to objects array
+    size_t objects_num;       //number of objects in array
 } phys_t;
 
 //enumeration returned by phys_run() and pobj_run()
