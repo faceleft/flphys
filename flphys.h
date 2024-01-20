@@ -5,10 +5,10 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-extern const double PHYS_G;                   //6.6743015151515151514e-11
+extern const double PHYS_G;                   //6.6743015151515151514e-11 m^3/(kg*s^2)
 extern const double PHYS_PI;                  //3.1415926535897932385
-extern const double PHYS_AIR_DENSITY;         //1.225
-extern const double PHYS_ACCEL_OF_FREE_FALL;  //9.80665
+extern const double PHYS_AIR_DENSITY;         //1.225 kg/m^3
+extern const double PHYS_ACCEL_OF_FREE_FALL;  //9.80665 m/s^2
 extern const double PHYS_BALL_DRAG_COEF;      //0.47
 
 typedef struct {
