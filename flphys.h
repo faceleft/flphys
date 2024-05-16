@@ -5,11 +5,11 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-extern const double PHYS_G;                   //6.6743015151515151514e-11 m^3/(kg*s^2)
-extern const double PHYS_PI;                  //3.1415926535897932385
-extern const double PHYS_AIR_DENSITY;         //1.225 kg/m^3
-extern const double PHYS_ACCEL_OF_FREE_FALL;  //9.80665 m/s^2
-extern const double PHYS_BALL_DRAG_COEF;      //0.47
+extern const double PHYS_G;                  //6.6743015151515151514e-11 m^3/(kg*s^2)
+extern const double PHYS_PI;                 //3.1415926535897932385
+extern const double PHYS_AIR_DENSITY;        //1.225 kg/m^3
+extern const double PHYS_ACCEL_OF_FREE_FALL; //9.80665 m/s^2
+extern const double PHYS_BALL_DRAG_COEF;     //0.47
 
 typedef struct {
    double x; // m | m/s | N
@@ -28,13 +28,13 @@ typedef struct {
 } pobj_t;
 
 typedef struct {
-    double density;           //ambient air density kg/m^3
-    pvec_t accel_of_gravity;  //constant acceleration acting on all objects m/s^2
-    pvec_t wind;              //ambien wind m/s
-    bool is_gravity;          //inter-object gravity flag
-    double time;              //total simulation time
-    pobj_t * objects;         //pointer to objects array
-    size_t objects_num;       //number of objects in array
+    double density;          //ambient air density kg/m^3
+    pvec_t accel_of_gravity; //constant acceleration acting on all objects m/s^2
+    pvec_t wind;             //ambien wind m/s
+    bool is_gravity;         //inter-object gravity flag
+    double time;             //total simulation time
+    pobj_t * objects;        //pointer to objects array
+    size_t objects_num;      //number of objects in array
 } phys_t;
 
 //enumeration returned by phys_run() and pobj_run()

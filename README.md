@@ -6,9 +6,9 @@ A simple library for calculating multi-body motion that can use air resistance, 
 make install
 ```
 This can be used without installation, you just need to copy the `flphys.c` and `flphys.h` files into the desired project,
-only the standard library (including `math.h`) has dependencies. The `-lm` compiler/linker flag may be required to use it.
+only the standard library (including `math`) has dependencies. The `-lm` compiler/linker flag may be required to use it.
 
-### Uninstall 
+## Uninstall 
 ```bash
 make uninstall
 ```
@@ -23,8 +23,26 @@ Runs simulations with different numbers of objects, with 1 ms accuracy, and outp
 ```bash
 make bench
 ```
+My results:
+```
+gcc:
+1 obj: x18985.70
+10 objs: x3421.00
+100 objs: x514.50
+1000 objs: x99.50
 
+clang:
+1 obj: x18474.20
+10 objs: x4848.00
+100 objs: x647.60
+1000 objs: x90.60
 
+tcc: (no optimization)
+1 obj: x8308.80
+10 objs: x1009.10
+100 objs: x139.50
+1000 objs: x14.40
+```
 
 # Provides
 

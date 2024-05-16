@@ -1,44 +1,55 @@
-PREFIX=/usr
+PREFIX=/usr/local
+DESTDIR=
 
 CC=cc
+AR=ar
+LD=ld
 
-CFLAGS= -Wall -Wextra -Ofast -march=native
+#CFLAGS= -Wall -Wextra -Wpedantic -pedantic -Og -g
+CFLAGS=-Ofast
 
-HEADERS=flphys.h
+HEADER=flphys.h
 SOURCES=flphys.c
 
-OBJECTS=libflphys.o
+OBJECTS=$(SOURCES:.c=.o)
 SHARED=libflphys.so
+STATIC=libflphys.a
 
 TEST_SRC=flphys_test.c
 BENCH_SRC=flphys_bench.c
 
-all: $(SHARED)
+all: $(SHARED) $(STATIC)
 
 $(SHARED): $(OBJECTS)
-	$(CC) -shared $^ -o $@
+	$(LD) -shared $^ -o $@ -lm
 
-$(OBJECTS): $(SOURCES) $(HEADERS)
-	$(CC) -c -fPIC $(CFLAGS) -std=c99 $(SOURCES) -o $@
+$(STATIC): $(OBJECTS)
+	$(AR) rcs $@ $^
 
-install: $(HEADERS) $(SHARED)
-	mkdir -p $(PREFIX)/include
-	mkdir -p $(PREFIX)/lib
-	install $(HEADERS) $(PREFIX)/include/$(HEADERS)
-	install $(SHARED) $(PREFIX)/lib/$(SHARED)
+.c.o:
+	$(CC) -fPIC -std=c99 -c $(CFLAGS) $< -o $@
+
+install: $(HEADER) $(SHARED) $(STATIC)
+	mkdir -p $(DESTDIR)$(PREFIX)/include
+	mkdir -p $(DESTDIR)$(PREFIX)/lib
+	install $(HEADER) $(DESTDIR)$(PREFIX)/include/$(HEADER)
+	install $(SHARED) $(DESTDIR)$(PREFIX)/lib/$(SHARED)
+	install $(SHARED) $(DESTDIR)$(PREFIX)/lib/$(STATIC)
 
 uninstall:
-	rm $(PREFIX)/include/$(HEADERS)
-	rm $(PREFIX)/lib/$(SHARED)
+	rm $(DESTDIR)$(PREFIX)/include/$(HEADER)
+	rm $(DESTDIR)$(PREFIX)/lib/$(SHARED)
+	rm $(DESTDIR)$(PREFIX)/lib/$(STATIC)
 
 clean:
 	rm -rf $(OBJECTS)
 	rm -rf $(SHARED)
+	rm -rf $(STATIC)
 
-test: $(OBJECTS) $(TEST_SRC)
-	$(CC) $(TEST_SRC) $(OBJECTS) -lm -o flphys_test.tmp && ./flphys_test.tmp
-	rm -f flphys_test.tmp
+test: $(STATIC) $(TEST_SRC)
+	$(CC) $(TEST_SRC) $(STATIC) -lm -O0 -o flphys_test_tmp && ./flphys_test_tmp
+	rm -f flphys_test_tmp
 
-bench: $(OBJECTS) $(BENCH_SRC)
-	$(CC) $(BENCH_SRC) $(OBJECTS) -lm -O0 -o flphys_bench.tmp && ./flphys_bench.tmp
-	rm -f flphys_bench.tmp
+bench: $(STATIC) $(BENCH_SRC)
+	$(CC) $(BENCH_SRC) $(STATIC) -lm -O0 -o flphys_bench_tmp && ./flphys_bench_tmp
+	rm -f flphys_bench_tmp
