@@ -43,7 +43,7 @@ pobj_t pobj_create(pvec_t pos, pvec_t mov, double mass, double radius) {
 
 pres_t pobj_run(pobj_t *obj, double time) {
     if (obj->mass == 0) {
-        return ERR_ZERO_MASS;
+        return PHYS_ERR_ZERO_MASS;
     }
     pvec_t acceleration = {
         .x = obj->force.x / obj->mass,
@@ -58,7 +58,7 @@ pres_t pobj_run(pobj_t *obj, double time) {
     obj->mov.x += acceleration.x * time;
     obj->mov.y += acceleration.y * time;
     obj->mov.z += acceleration.z * time;
-    return OK;
+    return PHYS_OK;
 }
 
 void pobj_set_radius(pobj_t *obj, double radius) {
@@ -137,7 +137,7 @@ static pres_t compute_objects_force(const phys_t *phys, pobj_t *obj) {
 
                 double dist_len = pvec_len(dist);
                 if (dist_len == 0)
-                    return ERR_ZERO_DIST;
+                    return PHYS_ERR_ZERO_DIST;
 
                 double gravy_f = real_mass *
                                  (other_obj->mass - (other_obj->volume * phys->density)) * PHYS_G /
@@ -150,14 +150,14 @@ static pres_t compute_objects_force(const phys_t *phys, pobj_t *obj) {
             }
         }
     }
-    return OK;
+    return PHYS_OK;
 }
 
 pres_t phys_run(phys_t *phys, double step_time, uint64_t steps) {
     if (phys->objects_num == 0)
-        return OK;
+        return PHYS_OK;
     if (phys->objects == NULL)
-        return ERR_NULL_PTR;
+        return PHYS_ERR_NULL_PTR;
 
     uint64_t counter = 0;
     pres_t err;
@@ -175,5 +175,5 @@ pres_t phys_run(phys_t *phys, double step_time, uint64_t steps) {
         }
     }
     phys->time += step_time * steps;
-    return OK;
+    return PHYS_OK;
 }

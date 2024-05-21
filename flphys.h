@@ -39,10 +39,10 @@ typedef struct {
 
 //enumeration returned by phys_run() and pobj_run()
 typedef enum {
-    OK = 0,        //success
-    ERR_NULL_PTR,  //pointer to objects is null when their number is greater than 0
-    ERR_ZERO_DIST, //2 objects are at the same point, with gravity turned on
-    ERR_ZERO_MASS  //massless object
+    PHYS_OK = 0,        //success
+    PHYS_ERR_NULL_PTR,  //pointer to objects is null when their number is greater than 0
+    PHYS_ERR_ZERO_DIST, //2 objects are at the same point, with gravity turned on
+    PHYS_ERR_ZERO_MASS  //massless object
 } pres_t;
 
 //returns a new initialized vector using length, XOY angle and ZOY angle

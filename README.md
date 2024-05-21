@@ -212,16 +212,16 @@ typedef struct {
 ### Result
 
 The enumeration returned by the motion calculation functions
-* `OK` - successfully
-* `ERR_NULL_PTR` - pointer to objects is null when their number is greater than 0
-* `ERR_ZERO_DIST` - 2 objects are at the same point, with gravity turned on
-* `ERR_ZERO_MASS` - massless object
+* `PHYS_OK` - successfully
+* `PHYS_ERR_NULL_PTR` - pointer to objects is null when their number is greater than 0
+* `PHYS_ERR_ZERO_DIST` - 2 objects are at the same point, with gravity turned on
+* `PHYS_ERR_ZERO_MASS` - massless object
 ```C
 typedef enum {
-    OK = 0,
-    ERR_NULL_PTR, 
-    ERR_ZERO_DIST,
-    ERR_ZERO_MASS
+    PHYS_OK = 0,
+    PHYS_ERR_NULL_PTR, 
+    PHYS_ERR_ZERO_DIST,
+    PHYS_ERR_ZERO_MASS
 } pres_t;
 ```
 
