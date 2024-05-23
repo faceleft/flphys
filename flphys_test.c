@@ -1,4 +1,3 @@
-#include <assert.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,7 +8,7 @@ typedef enum { DONE, FAIL } ptest_res_t;
 
 typedef ptest_res_t (*ptest_t)(void);
 
-double dist(pvec_t target, pvec_t value) {
+pflt_t dist(pvec_t target, pvec_t value) {
     return pvec_len((pvec_t){
         target.x - value.x,
         target.y - value.y,
@@ -63,42 +62,42 @@ ptest_res_t test_air() {
 ptest_res_t test_err() {
     phys_t a = phys_create(0, (pvec_t){0}, (pvec_t){0}, NULL, 1, 0);
 
-    if (phys_run(&a, 1, 1) != ERR_NULL_PTR)
+    if (phys_run(&a, 1, 1) != PHYS_ERR_NULL_PTR)
         return FAIL;
 
     a = phys_create(0, (pvec_t){0}, (pvec_t){0}, NULL, 0, 0);
 
-    if (phys_run(&a, 1, 1) != OK)
+    if (phys_run(&a, 1, 1) != PHYS_OK)
         return FAIL;
 
     pobj_t o = pobj_create((pvec_t){0}, (pvec_t){0}, 0, 0);
     a = phys_create(0, (pvec_t){0}, (pvec_t){0}, &o, 1, 0);
-    if (phys_run(&a, 1, 1) != ERR_ZERO_MASS)
+    if (phys_run(&a, 1, 1) != PHYS_ERR_ZERO_MASS)
         return FAIL;
 
     pobj_t os[2];
     os[0] = pobj_create((pvec_t){0}, (pvec_t){0}, 1, 0);
     os[1] = pobj_create((pvec_t){0}, (pvec_t){0}, 1, 0);
     a = phys_create(0, (pvec_t){0}, (pvec_t){0}, os, 2, 1);
-    if (phys_run(&a, 1, 1) != ERR_ZERO_DIST)
+    if (phys_run(&a, 1, 1) != PHYS_ERR_ZERO_DIST)
         return FAIL;
 
     o = pobj_create((pvec_t){0}, (pvec_t){10, 10, 10}, 1, 0.1);
     a = phys_create(1.225, (pvec_t){0, -9.8, 0}, (pvec_t){-1, -1, -1}, &o, 1, 0);
-    if (phys_run(&a, 0.1, 10) != OK)
+    if (phys_run(&a, 0.1, 10) != PHYS_OK)
         return FAIL;
 
     return DONE;
 }
 
 ptest_res_t test_gravity() {
-    const double MASS = 1.0e24L;
-    const double RAD = 1.0e1L;
+    const pflt_t MASS = 1.0e24L;
+    const pflt_t RAD = 1.0e1L;
     const uint64_t STEPS = 100000;
 
     pobj_t objs[3];
-    double V = sqrt(PHYS_G * (MASS / RAD));
-    double time = (2 * PHYS_PI * RAD) / V / 2;
+    pflt_t V = sqrt(PHYS_G * (MASS / RAD));
+    pflt_t time = (2 * PHYS_PI * RAD) / V / 2;
 
     pvec_t pos1 = (pvec_t){0, RAD, 0};
     pvec_t pos2 = (pvec_t){0, -RAD, 0};
@@ -110,7 +109,7 @@ ptest_res_t test_gravity() {
     phys_t phys = phys_create(0, (pvec_t){0}, (pvec_t){0}, objs, 3, 1);
 
     for (uint64_t i = 0; i < STEPS; i++) {
-        if (phys_run(&phys, time / STEPS, 1) != OK)
+        if (phys_run(&phys, time / STEPS, 1) != PHYS_OK)
             return FAIL;
     }
 

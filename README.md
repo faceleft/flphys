@@ -46,127 +46,16 @@ tcc: (no optimization)
 
 # Provides
 
-## Functions
-
-### pvec_scs_create()
-
-Alternatively, you can create a vector by its length and angles XOY and ZOY (radians), for two-dimensional simulations the angle ZOY must be equal to PI/2. Returns initialized vector.
-
-```C
-pvec_t pvec_scs_create(double len, double xy_angle, double zy_angle);
-```
-
-### pvec_len()
-
-Gets the vector and returns the calculated length
-
-```C
-double pvec_len(pvec_t vector);
-```
-
-### pvec_xy_angle()
-
-Gets the vector and returns the calculated XOY angle in radians
-
-```C
-double pvec_xy_angle(pvec_t vector);
-```
-
-### pvec_zy_angle()
-
-Gets the vector and returns the calculated ZOY angle in radians
-
-```C
-double pvec_zy_angle(pvec_t vector);
-```
-
-### pobj_create()
-Gets the required data, computes the others, and returns the initialized object.
-* `pos` - initial position of the object 
-* `mov` - initial motion of the object
-* `mass` - object mass
-* `radius` - object radius, all objects are spherical
-
-```C
-pobj_t pobj_create(pvec_t pos, pvec_t mov, double mass, double radius);
-```
-
-### pobj_run()
-Сalculates the motion of the passed object along the parabola by `mov` and `force` fields, for `time` seconds. Returns `pres_t` structure (see below).  Usually used only inside the library
-```C
-pres_t pobj_run(pobj_t * obj, double time);
-```
-### pobj_set_radius()
-Sets the radius of the object and recalculates its cross-sectional area and volume.
-```C
-void pobj_set_radius(pobj_t * obj, double radius);
-```
-### pobj_set_area()
-Sets the cross-sectional area of the object and recalculates its radius and volume.
-```C
-void pobj_set_area(pobj_t * obj, double area);
-```
-### pobj_set_volume()
-Sets the volume of the object and recalculates its cross-sectional area and radius.
-```C
-void pobj_set_volume(pobj_t * obj, double volume);
-```
-### phys_create()
-Gets the required data, computes the others, and returns the initialized physics scene.
-* `double density` - ambient air density, set it to 0 if there's a vacuum around. You can use the constant PHYS_AIR_DENSITY
-* `accel_of_gravity` - Free fall acceleration of the environment. Set it to 0 if there is no common gravity. You can use the constant PHYS_ACCEL_OF_FREE_FALL.
-* `wind` - air movement vector
-* `objects[]` - pointer to objects array
-* `objects_num` - number of objects in the array
-* `is_gravity` - flag enabling gravity between objects, works slowly, *O(n^2)* where *n* is the number of objects.
-```C
-phys_t phys_create(double density,
-                   pvec_t accel_of_gravity,
-                   pvec_t wind,
-                   pobj_t objects[],
-                   size_t objects_num,
-                   bool is_gravity);
-```
-
-### phys_run()
-Basic function for calculations. Calculates the movement by steps. 
-* `steps` - number of steps
-* `step_time` - stepping time
-
-During a step, all objects move at an equal acceleration, after which the forces are recomputed. Smaller step times improve the accuracy of the computation, but require more repeats, usually 1us - 1ms is sufficient.
-```C
-pres_t phys_run(phys_t * phys, double step_time, uint64_t steps);
-```
-
-## Constants
-**Constants used for calculations**
-
-Gravitational constant:
-```C
-extern const double PHYS_G;                   //6.6743015151515151514e-11 m^3/(kg*s^2)
-```
-
-Number of pi:
-```C
-extern const double PHYS_PI;                  //3.1415926535897932385
-```
-
-Normal air density:
-```C
-extern const double PHYS_AIR_DENSITY;         //1.225 kg/m^3
-```
-
-The normal acceleration of free fall:
-```C
-extern const double PHYS_ACCEL_OF_FREE_FALL;  //9.80665 m/s^2
-```
-
-Approximate shape resistance coefficient for a sphere:
-```C
-extern const double PHYS_BALL_DRAG_COEF;      //0.47
-```
-
 ## Structures
+
+### Floating
+To be able to change the type of variables, between 
+float, double, long double, the alias pflt_t is used. By default it is double, if you want to change the type, you need to define PHYS_USE_FLOAT or PHYS_USE_LONG_DOUBLE.
+```C
+typedef double pflt_t;
+//typedef float pflt_t;
+//typedef long double pflt_t;
+```
 
 ### Vector
 
@@ -174,9 +63,9 @@ A three-dimensional vector that is used in all vector quantities, it is better t
 
 ```C
 typedef struct {
-   double x; // m | m/s | N
-   double y; // m | m/s | N
-   double z; // m | m/s | N
+   pflt_t x; // m | m/s | N
+   pflt_t y; // m | m/s | N
+   pflt_t z; // m | m/s | N
 } pvec_t;
 ```
 ### Object
@@ -187,10 +76,10 @@ The structure of an object that contains its position, velocity, mass, radius, c
 typedef struct {
     pvec_t pos;    //m
     pvec_t mov;    //m/s
-    double mass;   //kg
-    double radius; //m
-    double area;   //m^2
-    double volume; //m^3
+    pflt_t mass;   //kg
+    pflt_t radius; //m
+    pflt_t area;   //m^2
+    pflt_t volume; //m^3
     pvec_t force;  //N
 } pobj_t;
 ```
@@ -200,11 +89,11 @@ The scene uniting the objects, through which all calculations are performed. Sto
 
 ```C
 typedef struct {
-    double density;           //ambient air density kg/m^3
+    pflt_t density;           //ambient air density kg/m^3
     pvec_t accel_of_gravity;  //constant acceleration acting on all objects m/s^2
     pvec_t wind;              //ambien wind m/s
     bool is_gravity;          //inter-object gravity flag
-    double time;              //total simulation time
+    pflt_t time;              //total simulation time
     pobj_t * objects;         //pointer to objects array
     size_t objects_num;       //number of objects in array
 } phys_t;
@@ -223,6 +112,127 @@ typedef enum {
     PHYS_ERR_ZERO_DIST,
     PHYS_ERR_ZERO_MASS
 } pres_t;
+```
+
+
+## Functions
+
+### pvec_scs_create()
+
+Alternatively, you can create a vector by its length and angles XOY and ZOY (radians), for two-dimensional simulations the angle ZOY must be equal to PI/2. Returns initialized vector.
+
+```C
+pvec_t pvec_scs_create(pflt_t len, pflt_t xy_angle, pflt_t zy_angle);
+```
+
+### pvec_len()
+
+Gets the vector and returns the calculated length
+
+```C
+pflt_t pvec_len(pvec_t vector);
+```
+
+### pvec_xy_angle()
+
+Gets the vector and returns the calculated XOY angle in radians
+
+```C
+pflt_t pvec_xy_angle(pvec_t vector);
+```
+
+### pvec_zy_angle()
+
+Gets the vector and returns the calculated ZOY angle in radians
+
+```C
+pflt_t pvec_zy_angle(pvec_t vector);
+```
+
+### pobj_create()
+Gets the required data, computes the others, and returns the initialized object.
+* `pos` - initial position of the object 
+* `mov` - initial motion of the object
+* `mass` - object mass
+* `radius` - object radius, all objects are spherical
+
+```C
+pobj_t pobj_create(pvec_t pos, pvec_t mov, pflt_t mass, pflt_t radius);
+```
+
+### pobj_run()
+Сalculates the motion of the passed object along the parabola by `mov` and `force` fields, for `time` seconds. Returns `pres_t` structure (see below).  Usually used only inside the library
+```C
+pres_t pobj_run(pobj_t * obj, pflt_t time);
+```
+### pobj_set_radius()
+Sets the radius of the object and recalculates its cross-sectional area and volume.
+```C
+void pobj_set_radius(pobj_t * obj, pflt_t radius);
+```
+### pobj_set_area()
+Sets the cross-sectional area of the object and recalculates its radius and volume.
+```C
+void pobj_set_area(pobj_t * obj, pflt_t area);
+```
+### pobj_set_volume()
+Sets the volume of the object and recalculates its cross-sectional area and radius.
+```C
+void pobj_set_volume(pobj_t * obj, pflt_t volume);
+```
+### phys_create()
+Gets the required data, computes the others, and returns the initialized physics scene.
+* `pflt_t density` - ambient air density, set it to 0 if there's a vacuum around. You can use the constant PHYS_AIR_DENSITY
+* `accel_of_gravity` - Free fall acceleration of the environment. Set it to 0 if there is no common gravity. You can use the constant PHYS_ACCEL_OF_FREE_FALL.
+* `wind` - air movement vector
+* `objects[]` - pointer to objects array
+* `objects_num` - number of objects in the array
+* `is_gravity` - flag enabling gravity between objects, works slowly, *O(n^2)* where *n* is the number of objects.
+```C
+phys_t phys_create(pflt_t density,
+                   pvec_t accel_of_gravity,
+                   pvec_t wind,
+                   pobj_t objects[],
+                   size_t objects_num,
+                   bool is_gravity);
+```
+
+### phys_run()
+Basic function for calculations. Calculates the movement by steps. 
+* `steps` - number of steps
+* `step_time` - stepping time
+
+During a step, all objects move at an equal acceleration, after which the forces are recomputed. Smaller step times improve the accuracy of the computation, but require more repeats, usually 1us - 1ms is sufficient.
+```C
+pres_t phys_run(phys_t * phys, pflt_t step_time, uint64_t steps);
+```
+
+## Constants
+**Constants used for calculations**
+
+Gravitational constant:
+```C
+extern const pflt_t PHYS_G;                   //6.6743015151515151514e-11 m^3/(kg*s^2)
+```
+
+Number of pi:
+```C
+extern const pflt_t PHYS_PI;                  //3.1415926535897932385
+```
+
+Normal air density:
+```C
+extern const pflt_t PHYS_AIR_DENSITY;         //1.225 kg/m^3
+```
+
+The normal acceleration of free fall:
+```C
+extern const pflt_t PHYS_ACCEL_OF_FREE_FALL;  //9.80665 m/s^2
+```
+
+Approximate shape resistance coefficient for a sphere:
+```C
+extern const pflt_t PHYS_BALL_DRAG_COEF;      //0.47
 ```
 
 ## Example
