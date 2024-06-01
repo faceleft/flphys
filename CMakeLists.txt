@@ -13,8 +13,8 @@ target_sources(${PROJECT_NAME} PRIVATE
     flphys.h
 )
 
-target_compile_options(${PROJECT_NAME} PRIVATE -Ofast)
+target_include_directories (${PROJECT_NAME} PUBLIC ".")
 
-set_target_properties(${PROJECT_NAME} PROPERTIES C_STANDARD 99)
-
-set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER flphys.h)
+set_target_properties(${PROJECT_NAME} PROPERTIES 
+    C_STANDARD 99
+)
